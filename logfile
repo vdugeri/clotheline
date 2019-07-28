@@ -1,0 +1,2 @@
+2019-07-17 09:20:28.374 WAT [36023] FATAL:  database files are incompatible with server
+2019-07-17 09:20:28.374 WAT [36023] DETAIL:  The data directory was initialized by PostgreSQL version 9.4, which is not compatible with this version 11.4.

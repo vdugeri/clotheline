@@ -52,7 +52,7 @@ export const addCollectionAndItems = async (key, objectsToAdd) => {
   return await batch.commit();
 };
 
-const convertCollectionsSnapshotToMap = collections => {
+export const convertCollectionsSnapshotToMap = collections => {
   const transformedCollection = collections.docs.map(doc => {
     const { title, items } = doc.data();
 
@@ -63,6 +63,11 @@ const convertCollectionsSnapshotToMap = collections => {
       items
     };
   });
+
+  return transformedCollection.reduce((accumulator, collection) => {
+    accumulator[collection.title.toLowerCase()] = collection;
+    return accumulator;
+  }, {});
 };
 
 export const auth = firebase.auth();

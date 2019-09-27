@@ -12,7 +12,9 @@ import {
   sigInSuccess,
   signInFailure,
   signOutSuccess,
-  signOutFailure
+  signOutFailure,
+  signUpSuccess,
+  signUpFailure
 } from "../user/user.actions";
 
 export function* getSnapshotFromUserAuth(userAuth) {
@@ -66,6 +68,20 @@ export function* signOut() {
   }
 }
 
+export function* createUserDocument({
+  payload: { email, password, displayName }
+}) {
+  try {
+    const { user } = yield auth.createUserWithEmailAndPassword(email, password);
+
+    const userRef = yield createUserProfileDocument(user, { displayName });
+    const userSnapShot = yield userRef.get();
+    yield put(signUpSuccess({ id: userSnapShot.id, ...userSnapShot.data() }));
+  } catch (error) {
+    yield put(signUpFailure(error));
+  }
+}
+
 export function* onEmailSignInStart() {
   yield takeLatest(userActionTypes.EMAIL_SIGNIN_START, signInWithEmail);
 }
@@ -78,11 +94,16 @@ export function* onSignoutStart() {
   yield takeLatest(userActionTypes.SIGN_OUT_START, signOut);
 }
 
+export function* onSignUpStart() {
+  yield takeLatest(userActionTypes.SIGNUP_START, createUserDocument);
+}
+
 export function* userSagas() {
   yield all([
     call(onGoogleSignInStart),
     call(onEmailSignInStart),
     call(onCheckUserSession),
-    call(onSignoutStart)
+    call(onSignoutStart),
+    call(onSignUpStart)
   ]);
 }
